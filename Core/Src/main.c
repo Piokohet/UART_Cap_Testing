@@ -91,7 +91,7 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
   /* array generation for UART testing*/
   for(n = 0; n < ARRAYLEN/EIGHTBIT; n++){
@@ -100,7 +100,7 @@ int main(void)
 	  }
   }
 
-  HAL_UART_Transmit_DMA(&huart1,val,ARRAYLEN);
+  HAL_UART_Transmit_DMA(&huart2,val,ARRAYLEN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
