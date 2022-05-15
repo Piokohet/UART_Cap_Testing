@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "adc.h"
 #include "dma.h"
 #include "usart.h"
 #include "gpio.h"
@@ -92,15 +93,18 @@ int main(void)
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   /* array generation for UART testing*/
+  /*
   for(n = 0; n < ARRAYLEN/EIGHTBIT; n++){
 	  for(i = 0; i < EIGHTBIT; i++){
 	  	  val[n*EIGHTBIT + i] = i;
 	  }
   }
+  */
+  HAL_ADC_Start_DMA(&hadc1,(uint32_t*) val, ARRAYLEN);
 
-  HAL_UART_Transmit_DMA(&huart2,val,ARRAYLEN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -160,7 +164,12 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+	if(hadc->Instance == ADC1)
+	{
+		HAL_UART_Transmit_DMA(&huart2,(uint8_t*)val,ARRAYLEN);
+	}
+}
 /* USER CODE END 4 */
 
 /**
