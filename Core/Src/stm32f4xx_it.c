@@ -238,7 +238,7 @@ void DMA2_Stream0_IRQHandler(void)
   /* USER CODE END DMA2_Stream0_IRQn 0 */
   HAL_DMA_IRQHandler(&hdma_adc1);
   /* USER CODE BEGIN DMA2_Stream0_IRQn 1 */
-
+  HAL_GPIO_TogglePin(OSCI2_GPIO_Port,OSCI2_Pin);
   /* USER CODE END DMA2_Stream0_IRQn 1 */
 }
 
