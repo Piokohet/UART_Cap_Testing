@@ -25,7 +25,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "arm_math.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -35,14 +35,16 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
-/* USER CODE END PD */
 
-/* Private macro -------------------------------------------------------------*/
-/* USER CODE BEGIN PM */
 /*maximum 8bit values*/
 #define EIGHTBIT 256
 /*Length of UART array*/
 #define ARRAYLEN 2048
+/* USER CODE END PD */
+
+/* Private macro -------------------------------------------------------------*/
+/* USER CODE BEGIN PM */
+
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -50,12 +52,21 @@
 /* USER CODE BEGIN PV */
 uint8_t val[ARRAYLEN]; //values to send via UART1
 uint16_t i,n; //
+
+float FFTInBuffer[ARRAYLEN];
+float FFTOutBuffer[ARRAYLEN];
+
+arm_rfft_fast_instance_f32 FFTHandler;
+
+volatile uint8_t SamplesReady;
+
+uint8_t OutFreqArray[10];
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+void CalculateFFT(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -105,12 +116,25 @@ int main(void)
   */
   HAL_ADC_Start_DMA(&hadc1,(uint32_t*) val, ARRAYLEN);
 
+  arm_rfft_fast_init_f32(&FFTHandler, ARRAYLEN);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if(SamplesReady == 1)
+	  {
+		  SamplesReady = 0;
+
+		  for(uint32_t i = 0; i < ARRAYLEN; i++)
+		  {
+			  FFTInBuffer[i] = (float) val[i];
+		  }
+
+		  CalculateFFT();
+
+	  }
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -165,11 +189,51 @@ void SystemClock_Config(void)
 
 /* USER CODE BEGIN 4 */
 void HAL_ADC_ConvCpltCallback(ADC_HandleTypeDef* hadc){
+
 	if(hadc->Instance == ADC1)
 	{
 		HAL_UART_Transmit_DMA(&huart2,(uint8_t*)val,ARRAYLEN);
+		SamplesReady = 1;
 	}
 }
+
+float complexABS(float real, float compl) {
+	return sqrtf(real*real+compl*compl);
+}
+
+void CalculateFFT(void)
+{
+	arm_rfft_fast_f32(&FFTHandler, FFTInBuffer, FFTOutBuffer, 0);
+
+	int Freqs[ARRAYLEN];
+	int FreqPoint = 0;
+	int Offset = 45; //variable noise floor offset
+
+	//calculate abs values and linear-to-dB
+	for (int i = 0; i < ARRAYLEN; i = i+2)
+	{
+		Freqs[FreqPoint] = (int)(20*log10f(complexABS(FFTOutBuffer[i], FFTOutBuffer[i+1]))) - Offset;
+
+		if(Freqs[FreqPoint] < 0)
+		{
+			Freqs[FreqPoint] = 0;
+		}
+		FreqPoint++;
+	}
+
+	OutFreqArray[0] = (uint8_t)Freqs[1]; // 22 Hz
+	OutFreqArray[1] = (uint8_t)Freqs[3]; // 63 Hz
+	OutFreqArray[2] = (uint8_t)Freqs[6]; // 125 Hz
+	OutFreqArray[3] = (uint8_t)Freqs[11]; // 250 Hz
+	OutFreqArray[4] = (uint8_t)Freqs[21]; // 500 Hz
+	OutFreqArray[5] = (uint8_t)Freqs[42]; // 1000 Hz
+	OutFreqArray[6] = (uint8_t)Freqs[93]; // 2200 Hz
+	OutFreqArray[7] = (uint8_t)Freqs[189]; // 4500 Hz
+	OutFreqArray[8] = (uint8_t)Freqs[378]; // 9000 Hz
+	OutFreqArray[9] = (uint8_t)Freqs[630]; // 15000 Hz
+
+}
+
 /* USER CODE END 4 */
 
 /**
