@@ -9,12 +9,39 @@ L = 2048;   %length of signal
 s = serialport("COM3",1843200);
 data = read(s,2048,"uint8");
 Y = fft(data);
+
 P2 = abs(Y/L);
 P1 = P2(1:L/2+1);
 P1(2:end-1) = 2*P1(2:end-1);
 
 f = Fs*(0:(L/2))/L;
+w = window(@blackmanharris,L);
+w = w';
+df = w.*data;
+figure(1);
 plot(f,P1) 
+
+title('Single-Sided Amplitude Spectrum of X(t)')
+xlabel('f (Hz)')
+ylabel('|P1(f)|')
+
+figure(2)
+subplot(1,2,1)
+plot(data)
+subplot(1,2,2)
+plot(df)
+
+
+Y1 = fft(df);
+P2f = abs(Y1/L);
+P1f = P2f(1:L/2+1);
+P1f(2:end-1) = 2*P1f(2:end-1);
+
+ff = Fs*(0:(L/2))/L;
+figure(3);
+plot(ff,P1f); 
+
+
 title('Single-Sided Amplitude Spectrum of X(t)')
 xlabel('f (Hz)')
 ylabel('|P1(f)|')

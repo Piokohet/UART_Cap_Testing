@@ -512,8 +512,8 @@ void MX_ADC1_Init(void)
 
   /** Configure for the selected ADC regular channel its corresponding rank in the sequencer and its sample time.
   */
-  sConfig.Channel = ADC_CHANNEL_0;
- 800060e:	2300      	movs	r3, #0
+  sConfig.Channel = ADC_CHANNEL_10;
+ 800060e:	230a      	movs	r3, #10
  8000610:	603b      	str	r3, [r7, #0]
   sConfig.Rank = 1;
  8000612:	2301      	movs	r3, #1
@@ -589,21 +589,21 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
  800067e:	613b      	str	r3, [r7, #16]
  8000680:	693b      	ldr	r3, [r7, #16]
 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOC_CLK_ENABLE();
  8000682:	2300      	movs	r3, #0
  8000684:	60fb      	str	r3, [r7, #12]
  8000686:	4b26      	ldr	r3, [pc, #152]	; (8000720 <HAL_ADC_MspInit+0xdc>)
  8000688:	6b1b      	ldr	r3, [r3, #48]	; 0x30
  800068a:	4a25      	ldr	r2, [pc, #148]	; (8000720 <HAL_ADC_MspInit+0xdc>)
- 800068c:	f043 0301 	orr.w	r3, r3, #1
+ 800068c:	f043 0304 	orr.w	r3, r3, #4
  8000690:	6313      	str	r3, [r2, #48]	; 0x30
  8000692:	4b23      	ldr	r3, [pc, #140]	; (8000720 <HAL_ADC_MspInit+0xdc>)
  8000694:	6b1b      	ldr	r3, [r3, #48]	; 0x30
- 8000696:	f003 0301 	and.w	r3, r3, #1
+ 8000696:	f003 0304 	and.w	r3, r3, #4
  800069a:	60fb      	str	r3, [r7, #12]
  800069c:	68fb      	ldr	r3, [r7, #12]
     /**ADC1 GPIO Configuration
-    PA0-WKUP     ------> ADC1_IN0
+    PC0     ------> ADC1_IN10
     */
     GPIO_InitStruct.Pin = GPIO_PIN_0;
  800069e:	2301      	movs	r3, #1
@@ -614,7 +614,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
     GPIO_InitStruct.Pull = GPIO_NOPULL;
  80006a6:	2300      	movs	r3, #0
  80006a8:	61fb      	str	r3, [r7, #28]
-    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+    HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
  80006aa:	f107 0314 	add.w	r3, r7, #20
  80006ae:	4619      	mov	r1, r3
  80006b0:	481c      	ldr	r0, [pc, #112]	; (8000724 <HAL_ADC_MspInit+0xe0>)
@@ -693,7 +693,7 @@ void HAL_ADC_MspInit(ADC_HandleTypeDef* adcHandle)
  800071a:	bf00      	nop
  800071c:	40012000 	.word	0x40012000
  8000720:	40023800 	.word	0x40023800
- 8000724:	40020000 	.word	0x40020000
+ 8000724:	40020800 	.word	0x40020800
  8000728:	200000d4 	.word	0x200000d4
  800072c:	40026410 	.word	0x40026410
 
