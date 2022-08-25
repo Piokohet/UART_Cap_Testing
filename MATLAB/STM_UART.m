@@ -2,12 +2,12 @@ clear;
 clc;
 close all;
 
-Fs = 49152; %Sampling frequency 48762 - 1000Hz, 49350 - 2000,02Hz, 49152 - 3000Hz for microphone
+Fs = 49180.3; %Sampling frequency 48762 - 1000Hz, 49350 - 2000,02Hz, 49152 - 3000Hz for microphone, 49180,3Hz - from calculations
 T = 1/Fs;   %Sampling period
 L = 2048;   %length of signal
 
-s = serialport("COM3",1843200);
-data = read(s,2048,"uint8");
+s = serialport("COM3",921600);
+data = read(s,L,"uint8");
 Y = fft(data);
 
 P2 = abs(Y/L);

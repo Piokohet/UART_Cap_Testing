@@ -1,0 +1,50 @@
+
+Objects 
+  linear = axb
+End Objects 
+
+Connections
+  x[1:10] = linear.x[1:10]
+End Connections
+
+Model 
+  Variables 
+    x[1:10] = 0
+  End Variables 
+
+  Equations 
+    ! add any additional equations here 
+  End Equations 
+End Model 
+
+File linear.txt
+  sparse, Ax>b  ! dense or sparse, Ax=b or Ax<b or Ax>b
+  10      ! m=number of rows in A and b 
+  10      ! n=number of columns in A or variables x
+End File
+
+File linear.a.txt 
+   1 1 2.000000
+   2 2 2.000000
+   3 3 2.000000
+   4 4 2.000000
+   5 5 2.000000
+   6 6 2.000000
+   7 7 2.000000
+   8 8 2.000000
+   9 9 2.000000
+   10 10 2.000000
+End File 
+
+File linear.b.txt 
+   1 0.157613
+   2 0.970593
+   3 0.957167
+   4 0.485376
+   5 0.800280
+   6 0.141886
+   7 0.421761
+   8 0.915736
+   9 0.792207
+   10 0.959492
+End File 
